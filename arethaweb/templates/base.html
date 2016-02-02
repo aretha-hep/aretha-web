@@ -1,0 +1,170 @@
+<!-- Latest compiled and minified CSS -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>aretha - monte carlo events as a service (MCaaS)</title>
+
+<!-- Bootstrap -->
+<link rel="stylesheet" href="/static/components/bootstrap/dist/css/bootstrap.min.css">
+<script src="/static/components/jquery/dist/jquery.min.js"></script>
+
+
+<!-- <script src="/static/components/requirejs/require.js"></script> -->
+<script src="/static/components/codemirror/lib/codemirror.js"></script>
+<link rel="stylesheet" href="static/components/codemirror/lib/codemirror.css">
+
+
+<script src="/static/components/socket.io-client/socket.io.js"></script>
+<script>
+    var socket = io(location.origin);
+    socket.on('connect',function(){
+        console.log('connected!')
+    })
+    socket.emit('luke','hello')
+    socket.on('luke',function(data){
+        console.log(data)
+    })
+</script>
+
+<script type="text/javascript">
+    $(document).ready(function(){
+      var editor = CodeMirror.fromTextArea(document.getElementById("editor"), {
+        lineNumbers: true,
+      });
+
+      $( "#submit-btn" ).click(function() {
+          socket.emit('go','what');
+      })
+    });
+</script>
+
+<style type="text/css" media="screen">
+.CodeMirror{
+    width: 500px;
+    height:500px;
+    border: 1px solid black;
+    margin:2em;
+    display:block;
+}
+</style>
+
+</script>
+
+<!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+<!--[if lt IE 9]>
+    <script src="//oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+    <script src="//oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+
+<script src="//d3js.org/d3.v3.min.js"></script>
+
+
+</head>
+<body>
+
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <h1><tt>aretha </tt>- monte carlo events as a service (MCaaS)</h1>
+                <p><tt>aretha</tt> wants to be a cloud service providing simulated particle collisions on-demand in a massively scaled way.</p>
+                <div class="col-md-6">
+                    <textarea id="editor">
+    (run){
+      # number of events:
+      EVENTS = 100000
+  
+      # Event output file:
+      EVENT_OUTPUT = HepMC_GenEvent[OUTFILE]
+    }(run)
+
+    (beam){
+      BEAM_1 =  2212; BEAM_ENERGY_1 = 250.;
+      BEAM_2 =  -2212; BEAM_ENERGY_2 = 250.;
+    }(beam)
+
+    (processes){
+      Process 93 93 -> 11 -11
+      End process
+    }(processes)
+                    </textarea>
+                </div>
+                <div id="histo" class="col-md-6">
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6">
+                <input id="submit-btn" class="btn btn-default" type="submit" value="Submit">
+            </div>
+        </div>
+    </div>
+    
+    
+    <script>
+    // Generate a Bates distribution of 10 random variables.
+
+
+    var values = d3.range(1000).map(d3.random.bates(10));
+    var newvalues = d3.range(1000).map(function(){return 1;})
+
+    // values   = [0,1,1,1,2,2,3,3,4,4,5,5]
+    // newvalues = [0.5,0.5,0.5,0.4,0.4,0.0,-2,3]
+
+    // A formatter for counts.
+    var formatCount = d3.format(",.0f");
+
+    var margin = {top: 10, right: 30, bottom: 30, left: 30},
+        width = 500 - margin.left - margin.right,
+        height = 500 - margin.top - margin.bottom;
+
+    var x = d3.scale.linear()
+        .domain([0, 1])
+        .range([0, width]);
+
+    // Generate a histogram using twenty uniformly-spaced bins.
+    var data = d3.layout.histogram().bins(x.ticks(20))(values);
+
+    histogram = data;
+
+    var y = d3.scale.linear()
+                    .domain([0, d3.max(data, function(d) { return d.y; })])
+                    .range([height, 0]);
+
+    var xAxis = d3.svg.axis().scale(x).orient("bottom");
+
+    var svg = d3.select("#histo").append("svg")
+              .attr("width", width + margin.left + margin.right)
+              .attr("height", height + margin.top + margin.bottom)
+              .append("g")
+              .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+    var bar = svg.selectAll(".bar").data(data)
+              .enter().append("g").attr("class", "bar").attr("transform", function(d) { return "translate(" + x(d.x) + "," + y(d.y) + ")"; });
+
+    bar.append("rect")
+        .attr("x", 1)
+        .attr("width", x(data[0].dx) - 1)
+        .attr("height", function(d) { return height - y(d.y); });
+
+    bar.append("text")
+        .attr("dy", ".75em")
+        .attr("y", 6)
+        .attr("x", x(data[0].dx) / 2)
+        .attr("text-anchor", "middle")
+        .text(function(d) { return formatCount(d.y); });
+
+    svg.append("g")
+        .attr("class", "x axis")
+        .attr("transform", "translate(0," + height + ")")
+        .call(xAxis);
+
+    newdata = d3.layout.histogram().bins(x.ticks(20))(values);
+
+    </script>
+</body>
+</html>

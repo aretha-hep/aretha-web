@@ -1,0 +1,25 @@
+{
+  "name": "Aretha",
+  "authors": [
+    "lukas.heinrich@gmail.com"
+  ],
+  "description": "frontend for Aretha, allowing job submission",
+  "main": "",
+  "moduleType": [],
+  "keywords": [
+    "monte",
+    "carlo",
+    "generator",
+    "cloud",
+    "computing"
+  ],
+  "license": "MIT",
+  "homepage": "",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}
