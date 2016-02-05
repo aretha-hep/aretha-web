@@ -15,7 +15,12 @@ sio = socketio.Server()
 
 @app.route('/')
 def home():
-  return render_template('base.html')
+    import make_plots
+    import plotly
+    figs = make_plots.make_plotly_figs()
+    htmlsnips = [plotly.offline.plot(x, output_type = 'div', include_plotlyjs = False) for x in figs]
+    
+    return render_template('base.html', htmlsnips = htmlsnips)
 
 @sio.on('connect')
 def connect(sid, environ):
