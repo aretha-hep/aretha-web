@@ -55,7 +55,6 @@
 .histobar{
     fill:red;
 }
-
 </style>
 
 </script>
@@ -73,20 +72,12 @@
 
 </head>
 <body>
-    <header>
-    <div class="container-fluid">
-        <div class="row">
-            <div class="col-md-12">
-                <h1><tt>aretha </tt>- monte carlo events as a service (MCaaS)</h1>
-                <p><tt>aretha</tt> wants to be a cloud service providing simulated particle collisions on-demand in a massively scaled way.</p>
-            </div>
-        </div>        
-    </div>
-    </header>
 
     <div class="container">
         <div class="row">
             <div class="col-md-12">
+                <h1><tt>aretha </tt>- monte carlo events as a service (MCaaS)</h1>
+                <p><tt>aretha</tt> wants to be a cloud service providing simulated particle collisions on-demand in a massively scaled way.</p>
                 <div class="col-md-6">
                     <textarea id="editor">
     (run){
@@ -113,7 +104,7 @@
                 
                 <div class="row">
                     <div class="col-md-3"></div>
-                    <div class="col-md-6" style="border:1px solid black;padding:0">
+                    <div class="col-md-6">
                 {% for x in htmlsnips%}
                     {{x|safe}}
                 {% endfor %}
@@ -171,7 +162,7 @@
                                          .append("rect")
                                          .attr('class','histobar')
                                          .attr('transform',function(d){ return "translate(" + x(d.x) + "," + y(d.y) + ")"; })
-                                         .attr("width", x(binned_data[0].dx)-x(0)+1)
+                                         .attr("width", x(binned_data[0].dx)-x(0)-1)
                                          .attr("height", 1)
                                          .attr("height", function(d) { return plotheight - y(d.y); });
 
@@ -189,7 +180,9 @@
         .attr("transform", "translate("+ (margin_horz) +",0)")
         .call(yAxis);
 
-    svg.selectAll('.axis line, .axis path').style({'stroke': 'Black', 'fill': 'none', 'stroke-width': '1px'});
+        svg.selectAll('.axis line, .axis path').style({'stroke': 'Black', 'fill': 'none', 'stroke-width': '1px'});
+    // // svg.selectAll(".axis").attr("stroke-width",1).attr("fill","blue")
+    // svg.selectAll(".axis path").attr("stroke-width",1).attr("fill","blue")
     </script>
 
 
